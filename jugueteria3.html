@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Juguetería Fantasía - Tu tienda de juguetes</title>
+    <link rel="shortcut icon" type="!mate/xicon" href="imagenesjugue/">
+    <style>
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+        }
+        header {
+            background-color: #ff9f43;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.2em;
+        }
+
+        /* Menú Minimalista */
+        nav {
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .menu li {
+            margin: 0 15px;
+        }
+        .menu li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: normal;
+            padding: 8px;
+            transition: color 0.3s;
+        }
+        .menu li a:hover {
+            color: #ff9f43;
+        }
+
+        /* Menú Responsivo */
+        @media screen and (max-width: 768px) {
+            .menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                background-color: white;
+                top: 60px;
+                right: 0;
+                width: 200px;
+            }
+            .menu-icon {
+                display: block;
+                cursor: pointer;
+                color: #333;
+                font-size: 1.5em;
+            }
+            .menu.active {
+                display: flex;
+            }
+        }
+
+        section {
+            padding: 100px 40px 40px;
+        }
+
+        /* Sección de Productos Horizontal */
+        .products {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+        }
+        .product {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            min-width: 250px;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .product:hover {
+            transform: translateY(-10px);
+        }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product h3 {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        .product p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .product button {
+            background-color: #ff9f43;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .product button:hover {
+            background-color: #ff6f43;
+        }
+
+        /* Sección de Carrito */
+        .cart {
+            background-color: white;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Formulario de Pago */
+        .payment {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .payment form {
+            display: inline-block;
+            max-width: 500px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .payment form input, .payment form select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .payment form input[type="submit"] {
+            background-color: #ff9f43;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .payment form input[type="submit"]:hover {
+            background-color: #ff6f43;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        footer a {
+            color: #ff9f43;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        let cartItems = [];
+
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+
+        function addToCart(productName) {
+            cartItems.push(productName);
+            updateCart();
+            alert(`${productName} ha sido añadido al carrito.`);
+        }
+
+        function updateCart() {
+            const cartSection = document.getElementById('cart-items');
+            cartSection.innerHTML = ''; // Limpia la sección del carrito
+            cartItems.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                cartSection.appendChild(div);
+            });
+            if (cartItems.length > 0) {
+                const payButton = document.createElement('button');
+                payButton.textContent = 'Pagar Ahora';
+                payButton.onclick = function() {
+                    window.location.href = "pago.html"; // Redirige a la página de pago
+                };
+                cartSection.appendChild(payButton);
+            }
+        }
+
+        // Script para redireccionar después del pago
+        function confirmarPago(event) {
+            event.preventDefault();
+            alert("Gracias por tu compra. Te estamos redirigiendo a la confirmación de pago.");
+            window.location.href = "confirmacion.html"; // Redirige a una página de confirmación
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="inicio">
+        <h1>Juguetería Fantasía</h1>
+        <p>Los mejores juguetes para grandes y pequeños</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Juguetería Fantasía</div>
+        <ul class="menu">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#productos">Productos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+    </nav>
+
+    <!-- Products Section -->
+    <section id="productos">
+        <h2>Catálogo de Productos</h2>
+        <div class="products">
+            <div class="product">
+                <img src="imagenesjugue/Bebes-llorones.jpg.webp" alt="Producto 1">
+                <h3> Bebés llorones</h3>
+                <p>Q58.87</p>
+                <button onclick="addToCart('Muñeca de Trapo')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Bloques-Fisher-Price.jpg.webp" alt="Producto 2">
+                <h3> Bloques Fisher Price</h3>
+                <p>Q150.89</p>
+                <button onclick="addToCart('Bloques Fisher Price')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Juguete-Super-Zing.jpg.webp" alt="Producto 3">
+                <h3> Súper Zings</h3>
+                <p>Q123.84</p>
+                <button onclick="addToCart('Juego de Construcción')">Añadir al Carrito</button>
+            </div>
+        </div>
+    </section>
+    <section id="productos">
+        <div class="products">
+            <div class="product">
+                <img src="imagenesjugue/Chico-First-Bike.jpg.webp" alt="Producto 1">
+                <h3> Chico First Bike</h3>
+                <p>Q356.87</p>
+                <button onclick="addToCart('Muñeca de Trapo')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Muneco-The-Bellies.jpg.webp" alt="Producto 2">
+                <h3>The Bellies</h3>
+                <p>Q652.74</p>
+                <button onclick="addToCart('Auto de Juguete')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/desarmar-juguetes-dinosaurios.jpg.webp" alt="Producto 3">
+                <h3> Desarmar Dinosaurios DIY</h3>
+                <p>Q158.23</p>
+                <button onclick="addToCart('Juego de Construcción')">Añadir al Carrito</button>
+            </div>
+        </div>
+    </section>
+    <section id="productos">
+        <div class="products">
+            <div class="product">
+                <img src="imagenesjugue/microfono-caraoke-ninos.jpg.webp" alt="Producto 1">
+                <h3> Micrófono Karaoke 4 en 1</h3>
+                <p>Q98.99</p>
+                <button onclick="addToCart('Muñeca de Trapo')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Super-Cute-muneca.jpg.webp" alt="Producto 2">
+                <h3> Súper Cute</h3>
+                <p>Q651.54</p>
+                <button onclick="addToCart('Auto de Juguete')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Lego-Classic.jpg.webp" alt="Producto 3">
+                <h3>LEGO Classic</h3>
+                <p>Q54.21</p>
+                <button onclick="addToCart('Juego de Construcción')">Añadir al Carrito</button>
+            </div>
+        </div>
+    </section>
+    <section id="productos">
+        <div class="products">
+            <div class="product">
+                <img src="imagenesjugue/Enchantimals.jpg.webp" alt="Producto 1">
+                <h3> Enchantimals</h3>
+                <p>Q451.21</p>
+                <button onclick="addToCart('Muñeca de Trapo')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Barbie-Autocaravana.jpg.webp" alt="Producto 2">
+                <h3>Barbie Autocaravana</h3>
+                <p>Q651.21</p>
+                <button onclick="addToCart('Auto de Juguete')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/LEGO-Princess.jpg.webp" alt="Producto 3">
+                <h3> LEGO Disney Princess</h3>
+                <p>Q999.99</p>
+                <button onclick="addToCart('Juego de Construcción')">Añadir al Carrito</button>
+            </div>
+        </div>
+    </section>
+    <section id="productos">
+        <div class="products">
+            <div class="product">
+                <img src="imagenesjugue/Bubiloons.jpg.webp" alt="Producto 1">
+                <h3>Bubiloons</h3>
+                <p>Q321.12</p>
+                <button onclick="addToCart('Muñeca de Trapo')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/Walkie-talkie-Kearui.jpg.webp" alt="Producto 2">
+                <h3>Walkie Talkie Kearui</h3>
+                <p>Q854.99</p>
+                <button onclick="addToCart('Auto de Juguete')">Añadir al Carrito</button>
+            </div>
+            <div class="product">
+                <img src="imagenesjugue/L.O.L-surprise.jpg.webp" alt="Producto 3">
+                <h3>L.O.L Surprise</h3>
+                <p>Q199.99</p>
+                <button onclick="addToCart('Juego de Construcción')">Añadir al Carrito</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section id="carrito" class="cart">
+        <h2>Carrito de Compras</h2>
+        <div id="cart-items"></div>
+    </section>
+
+   
+
+    <!-- Contact Section -->
+    <section id="contacto">
+        <h2>Contacto</h2>
+        <p>¿Tienes alguna pregunta? ¡Contáctanos!</p>
+        <p>Síguenos en nuestras redes sociales:</p>
+        <p>
+            <a href="https://www.instagram.com/lilsxxs_" target="_blank">Instagram</a> | 
+            <a href="https://www.facebook.com/share/Nbn66QYBPUsYG9m1/?mibextid=kFxxJD" target="_blank">Facebook</a>|
+            <a href="https://www.tiktok.com/@yefrd_?_t=8q2pRyKREqE&_r=1" target="_blank">Tiktok</a>     
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Juguetería Fantasía. Todos los derechos reservados.</p>
+    </footer>
+    
+</body>
+</html>
